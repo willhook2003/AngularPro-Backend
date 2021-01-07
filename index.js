@@ -14,24 +14,28 @@ const app = express();
 // voy a utilizar la conexion desde path database/config.js y para ello como lo exporte debo desestructurarlo aqui
 app.use(cors());
 
+//Lectura y parseo Body
+app.use( express.json() );
+
 // voy a llamar a la conexion de la BASE
 dbConnection();
 
 console.log( process.env );
 
-// pass: Dd3vfiXfOfYZo0Qd
+//mongoDBAtlas:  willhook2003@gmail.com 645388gwr
+// uHWHnUdpJYO5V8ee
 // user: mean_user    (datos de MongoAtlas)
 
 //mongodb+srv://mean_user:*****@cluster0.3dlct.mongodb.net/test?authSource=admin&replicaSet=atlas-k3y2sq-shard-0&readPreference=primary&appname=MongoDB%20Compass&ssl=true
 
+// Rutas para enlazar Router con el controlador
+// voy a usar un midleware
+app.use( '/api/usuarios', require('./routes/usuarios'));
 
-// crear ruta de entrada para los request y response
-app.get( '/', (request, response) => {
-    response.json({
-        ok: true,
-        msg: "hola mundo"
-    })
-});
+// creo una nueva ruta para el login
+app.use( '/api/login', require('./routes/auth'));
+
+
 
 app.listen(process.env.PORT, () => {
     console.log('Servidor corriendo en puerto ' + process.env.PORT)
