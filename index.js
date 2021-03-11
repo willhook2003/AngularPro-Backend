@@ -32,10 +32,20 @@ console.log( process.env );
 // voy a usar un midleware
 app.use( '/api/usuarios', require('./routes/usuarios'));
 
+
 // creo una nueva ruta para el login
 app.use( '/api/login', require('./routes/auth'));
 
+// Seccion 11 Creo ruta para hospitales
+app.use( '/api/hospitales', require('./routes/hospitales'));
+// Creo rutas para medicos
+app.use( '/api/medicos', require('./routes/medicos'));
 
+// Creo una ruta para las busquedas
+app.use( '/api/todo', require('./routes/busquedas'));
+
+// Creo una ruta (url) para la subida de archivos
+app.use( '/api/upload', require('./routes/uploads'));
 
 app.listen(process.env.PORT, () => {
     console.log('Servidor corriendo en puerto ' + process.env.PORT)

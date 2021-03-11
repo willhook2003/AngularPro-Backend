@@ -18,17 +18,58 @@ const { generarJWT } = require('../helpers/jwt');
 
 const getUsuarios = async (req, res) => {
 
-    //como una promesa, deberemos espera a que termine la consulta de todos los usuario para emitirlo dentro del response
+    /* PAGINACION: una forma de hacerlo manualmente, pero lo optimizaremos con el promise.all desde ES6
+
+    */
+    const desde = Number(req.query.desde) || 0 ;
+    
+    /*
+    console.log(desde);
+    
+    const usuarios = await Usuario
+                                    .find({}, 'nombre email google role')
+                                    .skip( desde )
+                                    .limit( 5)
+    
+    const total = await Usuario.count();
+
+    definiendo asi, con dos querys seguidos como consultas asincronas(await)
+    estariamos esperando, que resuelva una y luego despues de esa volver a esperar a que se 
+    resuelva la siguiente....
+    Esto lo que harìa es una relentizacion de nuestras consultas(para continuar el programa) si tuvieramos
+    muchos registros en la base por cada una de ellas
+
+    PAra esto existe el Promise.all  -Que es un arreglo de promesas, que se deberan cumplir, teneniedo
+    cada uno de los await como registros asiciativos por cada posicion del array
+
+
+    implemento un arreglo de promesas  await Promesi.all
+    y lo desestructuro como const [promesa1, promesa2, etc ..]
+    */
+
+    const [ usuarios, total ] = await Promise.all([
+        Usuario
+                .find({}, 'nombre email google role img')
+                .skip( desde )
+                .limit( 5 ),
+        Usuario.count()
+    ]);
+
+     //como una promesa, deberemos espera a que termine la consulta de todos los usuario para emitirlo dentro del response
     // Para buscar todos los usuarios, sin ninguna filtro - trae todo los atributos del usuario objeto-
     /*Se usa entonces .find(); solo parentesis sin argumentos
         const usuarios = await Usuario.find();  */
     /*Para realizar consulta y especificar un filtro hare .find({}, 'nombre') con {} especifico que es un filtro
     y con 'atributo1 atributo2 atributo3' especifico qué atributo quiero traer
-    */
+    
         const usuarios = await Usuario.find({}, 'nombre email google role');
+    
+        ****** esto se hizo antes de realizar PAGINACION, quedo comentario abajo
+    */
         res.json({
         ok: true,
         usuarios,
+        total,
         // esto configure en mi midlewarw de JWT y lo devuelvo por aca
         uid: req.uid
     });
